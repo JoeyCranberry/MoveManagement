@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkerObjective : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class WorkerObjective : MonoBehaviour
     
     public Vector2 completedableTime;
     public WorkerAbility abilityRequirement;
+
+    public Slider progressSlider;
     
     public float workTime = 10f;
 
@@ -20,6 +23,19 @@ public class WorkerObjective : MonoBehaviour
     private void Start()
     {
         workTimeRemaining = workTime;
+        if(progressSlider != null)
+        {
+            progressSlider.gameObject.SetActive(false);
+        }
+    }
+
+    private void SetupSlider(Slider slider)
+    {
+        if(slider != null)
+        {
+            progressSlider.maxValue = workTime;
+            progressSlider.value = 0;
+        }
     }
 
     public float ReduceWorkRemaining( float workDone )
@@ -27,15 +43,39 @@ public class WorkerObjective : MonoBehaviour
         if(!isComplete)
         {
             workTimeRemaining -= workDone;
+
+            if(progressSlider != null)
+            {
+                progressSlider.value = workTimeRemaining;
+            }
         }
         
         if (workTimeRemaining <= 0f)
         {
-            isComplete = true;
+            SetComplete();
         }
 
         return workTimeRemaining;
     }
+
+    private void SetComplete()
+    {
+        isComplete = true;
+        if (progressSlider != null)
+        {
+            progressSlider.gameObject.SetActive(value: false);
+        }
+    }
+
+    public void StartObjective()
+    {
+        if(progressSlider != null)
+        {
+            progressSlider.gameObject.SetActive(true);
+        }
+
+        SetupSlider(progressSlider);
+    }        
 
     public void Print()
     {

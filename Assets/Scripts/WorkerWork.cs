@@ -17,6 +17,8 @@ public class WorkerWork : MonoBehaviour
         this.objective = objective;
         this.abilities = abilities;
         isWorking = true;
+
+        objective.StartObjective();
     }
 
     // Update is called once per frame

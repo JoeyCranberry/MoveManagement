@@ -10,6 +10,8 @@ public class WorkerManager : MonoBehaviour
     private WorkerProject curProject;
     private WorkerObjective curObjective;
 
+    public Transform idleLocation;
+
     private bool capableOfWork = true;
 
     private WorkerControl wControl;
@@ -26,11 +28,6 @@ public class WorkerManager : MonoBehaviour
         StartNextProject();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void AddProject(WorkerProject newProject)
     {
@@ -58,6 +55,8 @@ public class WorkerManager : MonoBehaviour
         {
             curProject = null;
             curObjective = null;
+
+            wControl.AddWaypoint(idleLocation);
         }
     }
 
