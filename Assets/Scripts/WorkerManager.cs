@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class WorkerManager : MonoBehaviour
 {
-    public List<WorkerObjective> objectives = new();
+    public List<WorkerProject> projects = new List<WorkerProject>();
+
+    private WorkerProject curProject;
     private WorkerObjective curObjective;
 
     private bool capableOfWork = true;
@@ -20,48 +22,61 @@ public class WorkerManager : MonoBehaviour
     {
         wControl = gameObject.AddComponent<WorkerControl>();
         wControl.Initialize(this);
+
+        StartNextProject();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(capableOfWork)
-        {
-            // Doesn't have an objective, but there are objectives availible
-            if(curObjective == null && objectives.Count > 0)
-            {
-                curObjective = objectives[0];
-
-                wControl.AddWaypoint(curObjective.location);
-            }
-        }
+        
     }
 
-    private void AddObjecttive(WorkerObjective obj)
+    public void AddProject(WorkerProject newProject)
     {
-        if(!abilities.Contains(obj.abilityRequirement))
+        projects.Add(newProject);
+        projects.OrderBy(x => (int)x.priority).ThenBy(x => x.createdDt).ToList();
+    }
+
+    public void CompleteCurrentProject()
+    {
+        projects.Remove(curProject);
+        StartNextProject();
+    }
+
+    public void StartNextProject()
+    {
+        if (projects.Count > 0)
         {
-            Debug.Log("Worker cannot complete objective: does not have ability");
+            curProject = projects[0];
+            curObjective = curProject.objectives[0];
+
+            // Move worker towards objective to start project process
+            wControl.AddWaypoint(curObjective.location);
         }
         else
         {
-            objectives.Add(obj);
-
-            // Order the objectives by priority, then whichever was created first
-            objectives = objectives.OrderBy(x => (int)x.priority).ThenBy(x => x.createdDt).ToList();
+            curProject = null;
+            curObjective = null;
         }
     }
 
     private void GetNextObjective()
     {
-        objectives.Remove(curObjective);
-        if (objectives.Count > 0)
+        curProject.objectives.Remove(curObjective);
+        if (curProject.objectives.Count > 0)
         {
-            curObjective = objectives[0];
+            curObjective = curProject.objectives[0];
             wControl.AddWaypoint(curObjective.location);
+        }
+        else
+        {
+            // No more objectives in the current project to complete, move on to the next
+            CompleteCurrentProject();
         }
     }
 
+    // Once the work controller has reached the acceptable distance from the objective, start work on the objective
     public void ReachedObjective()
     {
         work = gameObject.AddComponent<WorkerWork>();
