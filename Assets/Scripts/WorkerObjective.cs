@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class WorkerObjective : MonoBehaviour
 {
+    public string Title;
+    public string Description;
     public Transform location;
     
     public Vector2 completedableTime;

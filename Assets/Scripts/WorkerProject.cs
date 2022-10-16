@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class WorkerProject : MonoBehaviour
 {
+    public string Title;
+
     public List<WorkerObjective> objectives = new List<WorkerObjective>();
     public ObjectivePriority priority;
     public DateTime createdDt;

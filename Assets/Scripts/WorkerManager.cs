@@ -7,10 +7,14 @@ public class WorkerManager : MonoBehaviour
 {
     public List<WorkerProject> projects = new List<WorkerProject>();
 
+    private WorkerMaster wMaster;
+
     private WorkerProject curProject;
     private WorkerObjective curObjective;
 
     public Transform idleLocation;
+
+    public GameObject workerBody;
 
     private bool capableOfWork = true;
 
@@ -25,9 +29,15 @@ public class WorkerManager : MonoBehaviour
         wControl = gameObject.AddComponent<WorkerControl>();
         wControl.Initialize(this);
 
+        workerBody.AddComponent<WorkerFocus>().Initialize(this);
+
         StartNextProject();
     }
 
+    public void Initialize(WorkerMaster wMaster)
+    {
+        this.wMaster = wMaster;
+    }
 
     public void AddProject(WorkerProject newProject)
     {
@@ -86,5 +96,10 @@ public class WorkerManager : MonoBehaviour
     {
         Destroy(work);
         GetNextObjective();
+    }
+
+    public void WorkerFocused()
+    {
+        wMaster.SetProjectDisplay(curProject, curObjective);
     }
 }

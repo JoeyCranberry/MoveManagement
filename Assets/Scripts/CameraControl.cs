@@ -18,6 +18,12 @@ public class CameraControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        GetPlayerMovement();
+        GetClickOnObject();
+    }
+
+    private void GetPlayerMovement()
+    {
         Vector3 updatePosition = GetHorizontalMovement(transform.position);
         updatePosition = GetVerticalMovement(updatePosition);
 
@@ -72,5 +78,23 @@ public class CameraControl : MonoBehaviour
         newPosition.y = Mathf.Clamp(newPosition.y, cameraVerticalLimit.x, cameraVerticalLimit.y);
 
         return newPosition;
+    }
+
+    private void GetClickOnObject()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 1000))
+            {
+                WorkerFocus worker = hit.transform.gameObject.GetComponent<WorkerFocus>();
+                if(worker != null)
+                {
+                    worker.FocusThis();
+                }
+            }
+        }
     }
 }
