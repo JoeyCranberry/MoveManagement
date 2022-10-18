@@ -10,7 +10,7 @@ public class WorkerObjective : MonoBehaviour
     public string Description;
     public Transform location;
     
-    public Vector2 completedableTime;
+    public Vector2 completedableDayTime;
     public WorkerAbility abilityRequirement;
 
     public Slider progressSlider;
@@ -82,7 +82,6 @@ public class WorkerObjective : MonoBehaviour
     public void Print()
     {
         Debug.Log("Location: " + location.position);
-        Debug.Log("Completable Time: " + completedableTime);
         Debug.Log("Ability Requirement: " + abilityRequirement);
     }
 }

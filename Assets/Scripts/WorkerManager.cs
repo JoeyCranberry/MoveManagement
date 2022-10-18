@@ -7,6 +7,8 @@ public class WorkerManager : MonoBehaviour
 {
     public List<WorkerProject> projects = new List<WorkerProject>();
 
+    public List<WorkerTrait> workerTraits = new List<WorkerTrait>();
+
     private WorkerMaster wMaster;
 
     private WorkerProject curProject;
@@ -89,7 +91,7 @@ public class WorkerManager : MonoBehaviour
     public void ReachedObjective()
     {
         work = gameObject.AddComponent<WorkerWork>();
-        work.Initialize(this, curObjective, abilities);
+        work.Initialize(this, curObjective, abilities, workerTraits, wMaster.dayManager.curTime);
     }
 
     public void CompletedObjective()

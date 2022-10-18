@@ -6,17 +6,27 @@ public class WorkerWork : MonoBehaviour
 {
     private WorkerManager manager;
 
-    public WorkerObjective objective;
-    public List<WorkerAbility> abilities;
+    private WorkerObjective objective;
+    private List<WorkerAbility> abilities;
+
+    private double traitMultiplier = 1d;
 
     public bool isWorking = false;
 
-    public void Initialize(WorkerManager manager, WorkerObjective objective, List<WorkerAbility> abilities )
+    public void Initialize(WorkerManager manager, WorkerObjective objective, List<WorkerAbility> abilities, List<WorkerTrait> traits, double curTick)
     {
         this.manager = manager;
         this.objective = objective;
         this.abilities = abilities;
         isWorking = true;
+
+        // Get work multiplier for each trait
+        Debug.Log("Intiailized work at time " + curTick);
+        foreach (WorkerTrait trait in traits)
+        {
+            traitMultiplier *= trait.WorkerTraitObjectiveMultiplier(objective, curTick);
+            Debug.Log("Since worker has trait " + trait.traitType + " multipler is " + traitMultiplier);
+        }
 
         objective.StartObjective();
     }
@@ -27,7 +37,7 @@ public class WorkerWork : MonoBehaviour
         if (isWorking)
         {
             // Objective returns remaining work
-            if (objective.ReduceWorkRemaining(Time.deltaTime) <= 0)
+            if (objective.ReduceWorkRemaining(Time.deltaTime * (float)traitMultiplier) <= 0)
             {
                 manager.CompletedObjective();
             }
