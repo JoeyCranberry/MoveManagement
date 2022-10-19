@@ -5,14 +5,12 @@ using UnityEngine;
 public static class Day
 {
     public static double StartTimeTick = 0d;
-    public static double EndTimeTick = 24d;
+    public static double EndTimeTick = 23d;
 
-    public static double DaytimeStart = 8d;
-    
-    public static double NighttimeStart = 18d;
-
-    public static double MorningEnd = 11d;
+    public static double DaytimeStart = 7d;
+    public static double MorningEnd = 12d;
     public static double AfternoonEnd = 18d;
+    public static double NighttimeStart = 18d;
 
     public static bool IsDaytime(double tick)
     {
