@@ -12,11 +12,14 @@ public class WorkerFocus : MonoBehaviour
         this.manager = manager;
     }
 
-    public void FocusThis()
+    public WorkerManager FocusThis()
     {
         if(manager != null)
         {
             manager.WorkerFocused();
+            return manager;
         }
+
+        return null;
     }    
 }

@@ -13,6 +13,8 @@ public class WorkerObjective : MonoBehaviour
     public Vector2 completedableDayTime;
     public WorkerAbility abilityRequirement;
 
+    private ObjectiveFocus focus;
+
     public Slider progressSlider;
     
     public float workTime = 10f;
@@ -29,6 +31,9 @@ public class WorkerObjective : MonoBehaviour
         {
             progressSlider.gameObject.SetActive(false);
         }
+
+        focus = gameObject.AddComponent<ObjectiveFocus>();
+        focus.Initialize(this);
     }
 
     private void SetupSlider(Slider slider)

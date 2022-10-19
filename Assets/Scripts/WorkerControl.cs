@@ -56,4 +56,10 @@ public class WorkerControl : MonoBehaviour
         waypoints.Enqueue(newWaypoint);
         pathfindingToObjective = true;
     }
+
+    public void ClearWaypoints()
+    {
+        waypoints.Clear();
+        pathfindingToObjective = false;
+    }
 }

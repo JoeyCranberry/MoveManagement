@@ -18,7 +18,7 @@ public class WorkerManager : MonoBehaviour
 
     public GameObject workerBody;
 
-    private bool capableOfWork = true;
+    // private bool capableOfWork = true;
 
     private WorkerControl wControl;
     public List<WorkerAbility> abilities;
@@ -58,10 +58,17 @@ public class WorkerManager : MonoBehaviour
         if (projects.Count > 0)
         {
             curProject = projects[0];
-            curObjective = curProject.objectives[0];
+            if(curProject.objectives.Count > 0)
+            {
+                curObjective = curProject.objectives[0];
 
-            // Move worker towards objective to start project process
-            wControl.AddWaypoint(curObjective.location);
+                // Move worker towards objective to start project process
+                wControl.AddWaypoint(curObjective.location);
+            }
+            else
+            {
+                Debug.LogWarning("Current project has no objectives");
+            }
         }
         else
         {
@@ -79,6 +86,7 @@ public class WorkerManager : MonoBehaviour
         {
             curObjective = curProject.objectives[0];
             wControl.AddWaypoint(curObjective.location);
+            wMaster.SetProjectDisplay(curProject, curObjective);
         }
         else
         {
@@ -102,6 +110,24 @@ public class WorkerManager : MonoBehaviour
 
     public void WorkerFocused()
     {
+        wMaster.SetProjectDisplay(curProject, curObjective);
+    }
+
+    /*
+     * Recieved when a worker was focused and then an objective was focused
+     */
+    public void ObjectiveManuallyAssigned(WorkerProject proj)
+    {
+        // Add current project back to to-do list
+        projects.Add(curProject);
+
+        curProject = proj;
+        curObjective = curProject.objectives[0];
+
+        // Set waypoint for controller
+        wControl.ClearWaypoints();
+        wControl.AddWaypoint(curObjective.location);
+
         wMaster.SetProjectDisplay(curProject, curObjective);
     }
 }
