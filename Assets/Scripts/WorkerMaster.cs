@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class WorkerMaster : MonoBehaviour
 {
     [SerializeField]
     private List<WorkerManager> workerManagers = new();
 
-    public TMPro.TMP_Text WorkerProjectDisplay;
+    public TMP_Text WorkerProjectDisplay;
     public DayManager dayManager;
 
     private void Start()
