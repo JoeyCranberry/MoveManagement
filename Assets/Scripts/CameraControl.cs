@@ -15,6 +15,8 @@ public class CameraControl : MonoBehaviour
 
     private float scrollSpeedMultiplier = 100f;
 
+    private WorkerManager focusedWorker;
+
     // Update is called once per frame
     void Update()
     {
@@ -82,19 +84,54 @@ public class CameraControl : MonoBehaviour
 
     private void GetClickOnObject()
     {
+        // On left-mouse button click, try and focus a worker
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            RaycastHit? hit = GetOnClickHit();
 
-            if (Physics.Raycast(ray, out hit, 1000))
+            if(hit != null)
             {
-                WorkerFocus worker = hit.transform.gameObject.GetComponent<WorkerFocus>();
+                WorkerFocus worker = hit.Value.transform.gameObject.GetComponent<WorkerFocus>();
                 if(worker != null)
                 {
-                    worker.FocusThis();
+                    focusedWorker = worker.FocusThis();
                 }
             }
         }
+
+        // On right-mouse button click, try and focus an objective
+        if(Input.GetMouseButtonDown(1))
+        {
+            RaycastHit? hit = GetOnClickHit();
+            if (hit != null)
+            {
+                ObjectiveFocus objective = hit.Value.transform.gameObject.GetComponent<ObjectiveFocus>();
+                if (objective != null)
+                {
+                    if(focusedWorker != null)
+                    {
+                        objective.FocusThisWorker(focusedWorker);
+                    }
+                    else
+                    {
+                        objective.FocusThisNoWorker();
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    private RaycastHit? GetOnClickHit()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 1000))
+        {
+            return hit;
+        }
+
+        return null;
     }
 }
