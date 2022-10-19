@@ -21,11 +21,9 @@ public class WorkerWork : MonoBehaviour
         isWorking = true;
 
         // Get work multiplier for each trait
-        Debug.Log("Intiailized work at time " + curTick);
         foreach (WorkerTrait trait in traits)
         {
             traitMultiplier *= trait.WorkerTraitObjectiveMultiplier(objective, curTick);
-            Debug.Log("Since worker has trait " + trait.traitType + " multipler is " + traitMultiplier);
         }
 
         objective.StartObjective();
