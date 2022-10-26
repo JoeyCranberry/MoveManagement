@@ -8,8 +8,11 @@ public class WorkerMaster : MonoBehaviour
     [SerializeField]
     private List<WorkerManager> workerManagers = new();
 
-    public TMP_Text WorkerProjectDisplay;
+    public GameObject WorkerProjectDisplayObj;
+    private TMP_Text workerProjectDisplay;
     public DayManager dayManager;
+
+    public bool projectDisplayVisible = false;
 
     private void Start()
     {
@@ -21,31 +24,53 @@ public class WorkerMaster : MonoBehaviour
             worker.Initialize(this);
         }
 
-        WorkerProjectDisplay.text = "";
+        workerProjectDisplay = WorkerProjectDisplayObj.GetComponent<TMP_Text>();
+        workerProjectDisplay.text = "";
     }
 
     public void SetProjectDisplay(WorkerProject proj, WorkerObjective obj)
     {
-        string displayText = "*"+ proj.Title + "*" + "\n";
-        bool foundActive = false;
-        foreach(WorkerObjective objectives in proj.objectives)
+        if(projectDisplayVisible)
         {
-            displayText += "    " + objectives.Title;
-            if(!foundActive)
+            string displayText;
+            if (proj == null)
             {
-                if (objectives == obj)
+                displayText = "No active projects";
+            }
+            else if(obj == null)
+            {
+                displayText = "No active objectives";
+            }
+            else
+            {
+                displayText = "*" + proj.Title + "*" + "\n";
+                bool foundActive = false;
+                foreach (WorkerObjective objectives in proj.objectives)
                 {
-                    displayText += " (Active)";
-                    foundActive = true;
-                }
-                else
-                {
-                    displayText += " (Completed)";
+                    displayText += "    " + objectives.Title;
+                    if (!foundActive)
+                    {
+                        if (objectives == obj)
+                        {
+                            displayText += " (Active)";
+                            foundActive = true;
+                        }
+                        else
+                        {
+                            displayText += " (Completed)";
+                        }
+                    }
+                    displayText += "\n";
                 }
             }
-            displayText += "\n";
-        }
 
-        WorkerProjectDisplay.text = displayText;
+            workerProjectDisplay.text = displayText;
+        }
+    }
+
+    public void SetProjectDisplayVisibility(bool isVisible)
+    {
+        WorkerProjectDisplayObj.SetActive(isVisible);
+        projectDisplayVisible = isVisible;
     }
 }
