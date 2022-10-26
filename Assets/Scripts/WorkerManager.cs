@@ -25,6 +25,9 @@ public class WorkerManager : MonoBehaviour
 
     private WorkerWork work;
 
+    private LineRenderer objectiveLine;
+    private WorkerObjectiveLine objLineManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +35,10 @@ public class WorkerManager : MonoBehaviour
         wControl.Initialize(this);
 
         workerBody.AddComponent<WorkerFocus>().Initialize(this);
+
+        objectiveLine = gameObject.GetComponent<LineRenderer>();
+        objLineManager = gameObject.AddComponent<WorkerObjectiveLine>();
+        objLineManager.Initialize(objectiveLine, workerBody.transform);
 
         StartNextProject();
     }
@@ -41,6 +48,8 @@ public class WorkerManager : MonoBehaviour
         this.wMaster = wMaster;
     }
 
+
+    #region Project State Management
     public void AddProject(WorkerProject newProject)
     {
         projects.Add(newProject);
@@ -58,16 +67,20 @@ public class WorkerManager : MonoBehaviour
         if (projects.Count > 0)
         {
             curProject = projects[0];
-            if(curProject.objectives.Count > 0)
+            if (curProject.objectives.Count > 0)
             {
                 curObjective = curProject.objectives[0];
 
                 // Move worker towards objective to start project process
                 wControl.AddWaypoint(curObjective.location);
+
+                SetObjectiveLines(curProject);
             }
             else
             {
                 Debug.LogWarning("Current project has no objectives");
+                projects.Remove(curProject);
+                StartNextProject();
             }
         }
         else
@@ -76,9 +89,12 @@ public class WorkerManager : MonoBehaviour
             curObjective = null;
 
             wControl.AddWaypoint(idleLocation);
+            objLineManager.AddLinePoints(new Vector3[2] { workerBody.transform.position, idleLocation.position });
         }
     }
+    #endregion
 
+    #region Objective State Management
     private void GetNextObjective()
     {
         curProject.objectives.Remove(curObjective);
@@ -87,6 +103,8 @@ public class WorkerManager : MonoBehaviour
             curObjective = curProject.objectives[0];
             wControl.AddWaypoint(curObjective.location);
             wMaster.SetProjectDisplay(curProject, curObjective);
+
+            SetObjectiveLines(curProject);
         }
         else
         {
@@ -99,17 +117,27 @@ public class WorkerManager : MonoBehaviour
     public void ReachedObjective()
     {
         work = gameObject.AddComponent<WorkerWork>();
-        work.Initialize(this, curObjective, abilities, workerTraits, wMaster.dayManager.curTime);
+        if (curObjective != null)
+        {
+            work.Initialize(this, curObjective, abilities, workerTraits, wMaster.dayManager.curTime);
+        }
     }
 
     public void CompletedObjective()
     {
-        Destroy(work);
+        if (work != null)
+        {
+            Destroy(work);
+        }
+
         GetNextObjective();
     }
+    #endregion
 
+    #region Focusing
     public void WorkerFocused()
     {
+        wMaster.SetProjectDisplayVisibility(true);
         wMaster.SetProjectDisplay(curProject, curObjective);
     }
 
@@ -129,5 +157,13 @@ public class WorkerManager : MonoBehaviour
         wControl.AddWaypoint(curObjective.location);
 
         wMaster.SetProjectDisplay(curProject, curObjective);
+
+        SetObjectiveLines(curProject);
+    }
+    #endregion
+
+    private void SetObjectiveLines(WorkerProject project)
+    {
+        objLineManager.AddProjectObjectivePositions(project, workerBody.transform);
     }
 }
